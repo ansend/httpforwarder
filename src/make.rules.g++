@@ -1,0 +1,34 @@
+#make.rules.g++ -*-
+# this is the g++ compile param, 
+# it contains the definition of CXX,CC,CFLAGS,CXXFLAGS,LDFLAGS,CXXLIBS,mklib,mkshlib 
+
+CXX=c++
+ifeq ($(CXX),)
+   CXX                  = g++
+   CC                   = gcc
+endif
+
+CFLAGS = #-O2
+
+CXXFLAGS        = $(CXXARCHFLAGS) -w -D_REENTRANT -DLINUX
+
+LDFLAGS         = -Wl,--gc-sections,-rpath,../bin
+
+ifeq ($(STATICLIBS),yes)
+        CXXFLAGS += -fPIC
+else
+        CXXFLAGS += -fPIC -fpic
+endif
+
+ifeq ($(debug),0)
+      CXXFLAGS  += -O3 -DDEBUG_ON=0
+else
+      CXXFLAGS  += -g
+endif
+
+CXXLIBS         =
+
+mkshlib         = $(CXX) -shared $(LDFLAGS) -o $(1) -Wl,-h,$(2) $(3) $(4) -lpthread
+
+mklib           = ar rcu $(1) $(2); ranlib $(1)
+

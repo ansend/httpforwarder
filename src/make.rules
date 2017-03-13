@@ -1,0 +1,91 @@
+#make.rules-*-
+#Make file general
+
+debug ?= 1
+
+STATICLIBS      ?= yes
+version         ?= yes
+VERSION         = 1  #  It will get the real version from svn
+
+bindir          = $(top_srcdir)/bin
+libdir          = $(top_srcdir)/lib
+
+include  $(top_srcdir)/src/make.rules.g++
+
+INCLWITH  = $(EXTR_INCLUDE)
+
+ifneq ($(BIN_NAME),)
+        BIN_TARGET      = $(BIN_NAME)
+        TARGETS         = $(BIN_TARGET)
+endif
+
+
+CPPFLAGS        = 
+LDFLAGS         := $(LDFLAGS) $(CXXFLAGS) -L$(libdir)
+
+EVERYTHING      = all clean
+
+.SUFFIXES:
+
+%.o: %.cpp
+	@echo "  $<"
+	$(CXX) -o $@ -c $(CPPFLAGS) $(CXXFLAGS) $(INCLWITH) $<
+
+%.o: %.cc
+	@echo "  $<"
+	@$(CXX) -o $@ -c $(CPPFLAGS) $(CXXFLAGS) $(INCLWITH) $<
+
+%.o: %.cxx
+	@echo "  $<"
+	@$(CXX) -o $@ -c $(CPPFLAGS) $(CXXFLAGS) $(INCLWITH) $<
+
+
+%.o: %.c
+	@echo "  $<"
+	$(CC) -o $@ -c $(CPPFLAGS) $(CXXFLAGS) $(INCLWITH) $<
+
+
+%.d: %.cpp 
+	@echo "  $<"
+	$(CXX) -MM $(CPPFLAGS)$(CXXFLAGS) $(INCLWITH) $< > $@
+
+%.d: %.cxx
+	@echo "  $<"
+	$(CXX) -MM $(CPPFLAGS)$(CXXFLAGS) $(INCLWITH) $< > $@
+
+%.d: %.cc
+	@echo "  $<"
+	$(CXX) -MM $(CPPFLAGS)$(CXXFLAGS) $(INCLWITH) $< > $@
+
+%.d: %.c
+	@echo "  $<"
+	$(CXX) -MM $(CPPFLAGS)$(CXXFLAGS) $(INCLWITH) $< > $@
+
+
+all:: warning $(SRCS) $(TARGETS)
+
+warning::
+	@echo 
+	@echo "CONFIGURATION: debug=$(debug) STATICLIBS=$(STATICLIBS)"
+	@echo
+
+clean::
+	@-rm -f $(TARGETS) $(OBJS)
+	@-rm -f core *.o
+
+
+$(LIB_TARGET):$(OBJS)
+ifeq ($(STATICLIBS),yes)
+	@echo "Creating static library ($@)..."
+	@rm -f $@
+	$(call mklib,$@,$(OBJS))
+else
+	@echo "Creating dynamic library ($@)..."
+	@rm -f $@
+	$(call mkshlib,$@,$(SONAME),$(OBJS),$(LINKWITH))
+endif
+
+$(BIN_TARGET):$(OBJS)
+	@echo "Creating executable -*- $@ -*- ..."
+	@-rm -f $@
+	$(CXX) -o $@ $(CXXFLAGS) $(OBJS) $(LDFLAGS) $(LINKWITH)
