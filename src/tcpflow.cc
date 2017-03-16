@@ -3,7 +3,7 @@
 void TcpFlow::Init()
 {
     regcomp(&reg_tcpflow,tcpflow_header,REG_EXTENDED);
-	Peer::SetFilter(pargs->packetFilterPattern);
+	Peer::SetFilter(pargs->packet_filter_pattern);
 	Peer::InitRequestRegex();
 }
 

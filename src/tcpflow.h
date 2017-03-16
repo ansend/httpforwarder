@@ -43,10 +43,10 @@ using namespace muduo::net;
 
 struct  ArgCxt
 {
-        std::string   targetIp;
-        uint16_t      targetPort;
+        std::string   target_ip;
+        uint16_t      target_port;
         uint32_t      timeout;
-        std::string   packetFilterPattern;
+        std::string   packet_filter_pattern;
 
 };
 
@@ -165,7 +165,7 @@ class TcpFlow
                             sockfd = 10;
 	
 					        printf("new a connection to 8000 from src %s\n", last_ip.c_str());
-                            boost::shared_ptr<Peer> p (new Peer(sockfd, last_ip, n_port, loop, pargs->targetIp, pargs->targetPort));
+                            boost::shared_ptr<Peer> p (new Peer(sockfd, last_ip, n_port, loop, pargs->target_ip, pargs->target_port));
                             boost::weak_ptr<Peer> wp (p);
 	                        curr_peer = p;
 
@@ -183,7 +183,7 @@ class TcpFlow
                                 //firstly remove the map item, then and a new one for the same src ip)
                                 Peer::peer_map.erase(itm);
          
-                                boost::shared_ptr<Peer> p (new Peer(sockfd, last_ip, n_port, loop, pargs->targetIp, pargs->targetPort));
+                                boost::shared_ptr<Peer> p (new Peer(sockfd, last_ip, n_port, loop, pargs->target_ip, pargs->target_port));
             			        boost::weak_ptr<Peer> wp (p);
             			        curr_peer = p;
             			        Peer::peer_map.insert(std::pair<std::string, boost::weak_ptr<Peer> > (last_ip, wp));

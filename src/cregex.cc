@@ -41,10 +41,10 @@ packetfilterpattern: packet filter pattern is a perl regular expression\n \
 
 void DumpArgs(const struct ArgCxt & arg)
 {
-   printf(" target ip:     %s\n", arg.targetIp.c_str());
-   printf(" target port:   %d\n", arg.targetPort);
+   printf(" target ip:     %s\n", arg.target_ip.c_str());
+   printf(" target port:   %d\n", arg.target_port);
    printf(" timeout    :   %d\n", arg.timeout);
-   printf(" packet filter: %s\n", arg.packetFilterPattern.c_str());
+   printf(" packet filter: %s\n", arg.packet_filter_pattern.c_str());
 
 }
 
@@ -56,13 +56,13 @@ void ParseArgs(struct ArgCxt & arg, int argc, char** argv)
                 exit(0);
     }
 
-    arg.targetIp =  argv[1];
-    arg.targetPort = atoi(argv[2]);
+    arg.target_ip =  argv[1];
+    arg.target_port = atoi(argv[2]);
 
     if (argc >= 4)
         arg.timeout = atoi(argv[3]);
     if (argc >= 5)
-        arg.packetFilterPattern = argv[4];
+        arg.packet_filter_pattern = argv[4];
 
     DumpArgs(arg);
 }
