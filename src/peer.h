@@ -1,9 +1,3 @@
-#include <muduo/base/Logging.h>
-#include <muduo/net/EventLoop.h>
-#include <muduo/net/TcpClient.h>
-#include <muduo/net/TcpServer.h>
-
-
 #include <regex.h>
 #include <iostream>
 #include <sys/types.h>
@@ -25,58 +19,70 @@
 #include <muduo/net/Buffer.h>
 #include <muduo/net/Endian.h>
 #include <muduo/net/InetAddress.h>
-
-#include <stdio.h>
+#include <muduo/base/Logging.h>
+#include <muduo/net/EventLoop.h>
+#include <muduo/net/TcpClient.h>
+#include <muduo/net/TcpServer.h>
 
 #include "timingwheel.h"
 
 #ifndef PEER_H
 #define PEER_H
-//using namespace muduo;
 using namespace muduo::net;
 using namespace boost;
-//void clientConnectionCallback(const TcpConnectionPtr& conn);
+
 
 class TimingWheel;
 class Peer
 {
-  public:
-  Peer(int fdp, std::string ipp, int portp, EventLoop* loop );
-/*
-  void init()
-  {
-     client->setConnectionCallback(boost::bind(&Peer::clientConnectionCallback, this, _1));
-     client->setMessageCallback(boost::bind(&Peer::clientMessageCallback, this, _1, _2, _3));
+    public:
+    Peer(int fdp, std::string ipp, int portp, EventLoop* loop, std::string, int);
 
-     client->connect();
-     loop->runEvery(1.0, boost::bind(&TimingWheel::onTimer, &wheel));
-
-  }
-*/
-  void dump();
-  void append(const char*, size_t);
-  void set_tcpconn(TcpConnectionPtr conn);
-
-  void clientConnectionCallback(const TcpConnectionPtr& conn);
-  void clientMessageCallback(const TcpConnectionPtr& conn,
-                             Buffer* buffer,
-                             muduo::Timestamp receiveTime);
-  public:
-  int fd;
-  std::string ip;
-  int port;
-
-  static std::map<std::string,weak_ptr<Peer> > peer_map;
-  static TimingWheel wheel;
-
-  TcpClient* client;
-  TcpConnectionPtr tptr;
-  timeval last;
+    virtual  ~Peer();
+    void     Dispatch();
+    void     Append(const char*, size_t);
+    void     SetTcpConn(TcpConnectionPtr conn);
   
-  Buffer out_buffer; // buffer for out put target sock fd.
+    void     ClientConnectionCallback(const TcpConnectionPtr& conn);
+    void     ClientMessageCallback(const TcpConnectionPtr& conn,
+                               Buffer* buffer,
+                               muduo::Timestamp receiveTime);
+    public:
+    int           fd;
+    std::string   ip;
+    int           port;
+  
+ 
+    TcpClient*       client;
+    TcpConnectionPtr tptr;
+    timeval          last;
 
+    //buffer for output quest.
+    Buffer           out_buffer; 
+    boost::mutex     buf_mutex; 
 
-  boost::mutex buf_mutex; 
+     
+    void static SetFilter(std::string flt)
+    {
+        filter = flt;
+
+    }
+    void static InitRequestRegex()
+    {
+        reqmatch = 1; 
+        regcomp(&reg_req, req_pattern, REG_EXTENDED); 
+        regcomp(&prex_req, filter.c_str(), REG_EXTENDED | REG_NOSUB);
+    }
+
+    static std::map<std::string,weak_ptr<Peer> > peer_map;
+    static TimingWheel wheel;
+    static const char* req_pattern ;
+    static size_t      reqmatch ;
+    static regmatch_t  reqm[1];
+    static regex_t     reg_req;
+
+    static std::string filter;
+    static regex_t     prex_req;
 };
 
 #endif

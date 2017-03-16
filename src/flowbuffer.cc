@@ -2,10 +2,10 @@
 
 char * FlowBuffer::retrieve(size_t n)
 {
-   assert(readable >= n);
-   writeinx = writeinx - n;
-   writeable = writeable + n;
+    assert(readable >= n);
+    writeinx = writeinx - n;
+    writeable = writeable + n;
 
-   memmove(buf, buf+n, readable);
-   return  writeinx;
+    memmove(buf, buf+n, readable);
+    return  writeinx;
 }

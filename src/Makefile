@@ -1,21 +1,14 @@
-CPP=g++
-LIB_FLAG= -lboost_system
-LD_FLAGS= -Wl,--gc-sections,-rpath,../bin
+top_srcdir      =..
+BIN_NAME        = httpforward
 
-cregex: cregex.o peer.o flowbuffer.o tcpflow.o timingwheel.o
-	g++ ./cregex.o ./peer.o ./flowbuffer.o ./tcpflow.o timingwheel.o -I/home/ansen/muduo /home/ansen/build/release/lib/libmuduo_net.a /home/ansen/build/release/lib/libmuduo_base.a $(LD_FLAGS) $(LIB_FLAG) -lpthread -lstdc++ -o cregex
-cregex.o: cregex.cc
-	g++ -g  -I/home/ansen/muduo -c cregex.cc
-peer.o: peer.cc  peer.h
-	g++  -g -I/home/ansen/muduo -c peer.cc 
-flowbuffer.o: flowbuffer.cc flowbuffer.h
-	g++  -g -I/home/ansen/muduo -c flowbuffer.cc 
-tcpflow.o : tcpflow.cc tcpflow.h
-	g++ -g -I/home/ansen/muduo -c tcpflow.cc
-timingwheel.o : timingwheel.cc timingwheel.h
-	g++ -g -I/home/ansen/muduo -c timingwheel.cc
+SRCS1 = $(wildcard *.cc) 
+SRCS_EXPR1 = $(wildcard */*.cc)
+OBJS = $(SRCS1:.cc=.o) $(SRCS_EXPR1:.cc=.o)
+EXTR_INCLUDE    = -fexceptions -DXML_NULL -DHAVE_EPOLL -DNODEBUG=1 -I. -I.. -I$(top_srcdir) -I$(top_srcdir)/muduo
+LINKWITH        =  $(libdir)/libmuduo_base.a $(libdir)/libmuduo_net.a -lpthread -lboost_system -lstdc++
 
-timingwheel_t.o : timingwheel_t.cc timingwheel_t.h
-	g++ -g -I/home/ansen/muduo -c timingwheel_t.cc
-clean:
-	rm *.o ; rm cregex
+include  $(top_srcdir)/src/make.rules
+
+clean::
+	@-rm -f $(TARGETS) $(OBJS) $(DEPS)
+	@-rm -f core *.o

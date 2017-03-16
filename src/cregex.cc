@@ -1,6 +1,6 @@
 /************************************ 
 A TCP BYPASS TOOL BASED ON TCPFLOW
-author: Ansen DOng
+Author: Ansen DOng
 ************************************/
 
 #include <regex.h>
@@ -34,20 +34,10 @@ using namespace muduo::net;
 
 const char * usage= "targetIp targetPort [timeout] [packetfilterpattern] \n \
 targetIp    : the target address will forward to. \n \
-targetPort  : the target port will forward to . \n \ 
+targetPort  : the target port will forward to . \n \
 timeout     : the idle connection timeout in second unit . \n \
 packetfilterpattern: packet filter pattern is a perl regular expression\n \
                      will filter each packet";
-
-struct  ArgCxt
-{
-        std::string   targetIp;
-    uint16_t      targetPort;
-        uint32_t      timeout;
-        std::string   packetFilterPattern;
-
-};
-
 
 void DumpArgs(const struct ArgCxt & arg)
 {
@@ -58,42 +48,39 @@ void DumpArgs(const struct ArgCxt & arg)
 
 }
 
-void initArg(struct ArgCxt & arg, int argc, char** argv)
+void ParseArgs(struct ArgCxt & arg, int argc, char** argv)
 {
     if (argc < 3 || strcmp(argv[1], "-h") == 0 )
-        {
+    {
                 printf("%s %s\n", argv[0], usage);
                 exit(0);
-        }
+    }
 
     arg.targetIp =  argv[1];
-        arg.targetPort = atoi(argv[2]);
+    arg.targetPort = atoi(argv[2]);
 
-        if (argc >= 4)
-                arg.timeout = atoi(argv[3]);
-
-        if (argc >= 5)
-                arg.packetFilterPattern = argv[4];
+    if (argc >= 4)
+        arg.timeout = atoi(argv[3]);
+    if (argc >= 5)
+        arg.packetFilterPattern = argv[4];
 
     DumpArgs(arg);
 }
 
+struct ArgCxt g_args;
+
 int main(int argc,char** argv)
 {
     signal(SIGPIPE, SIG_IGN);
-
-    struct ArgCxt arg;
-    initArg(arg, argc , argv);
+    
+	ParseArgs(g_args, argc , argv);
 
     EventLoopThread loop_thread;
     EventLoop * loop = loop_thread.startLoop();
 
-    TcpFlow tflow(loop);
-   
+    TcpFlow tflow(loop, &g_args);
     tflow.StartRun();
-
 }
-
 
 std::string& trim(std::string &s)   
 {  

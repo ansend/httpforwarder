@@ -32,18 +32,16 @@ EVERYTHING      = all clean
 	$(CXX) -o $@ -c $(CPPFLAGS) $(CXXFLAGS) $(INCLWITH) $<
 
 %.o: %.cc
-	@echo "  $<"
+	@echo "$(CXX) -o $@ -c $(CPPFLAGS) $(CXXFLAGS) $(INCLWITH) $<"
 	@$(CXX) -o $@ -c $(CPPFLAGS) $(CXXFLAGS) $(INCLWITH) $<
 
 %.o: %.cxx
 	@echo "  $<"
 	@$(CXX) -o $@ -c $(CPPFLAGS) $(CXXFLAGS) $(INCLWITH) $<
 
-
 %.o: %.c
 	@echo "  $<"
 	$(CC) -o $@ -c $(CPPFLAGS) $(CXXFLAGS) $(INCLWITH) $<
-
 
 %.d: %.cpp 
 	@echo "  $<"

@@ -5,7 +5,7 @@
 
 #ifndef FLOW_BUFFER_H
 #define FLOW_BUFFER_H
-#define BUF_SIZE 1024 * 2
+#define BUF_SIZE 1024 * 8
 
 class FlowBuffer
 {
@@ -22,14 +22,12 @@ class FlowBuffer
 
     size_t readFd(int fd)
     {
-        //dump();
         size_t n = read(fd, writeinx, writeable);  
-	printf(" this time read %d byte\n ", n);
+        //printf(" this time read %d byte\n ", n);
         writeinx = writeinx + n;
         writeable = writeable -n;
         readable = readable + n;
-	//dump();
-	return n;
+        return n;
     }
 
     char * retrieve(const char * src)
@@ -53,25 +51,23 @@ class FlowBuffer
     {
         return buf;
     }
-
     const char * get_writeinx()
-    {
+	{
         return writeinx;
-    }
-
+	} 
     void dump()
     {
         printf("size is %d\n ", BUF_SIZE);
-	printf("readable is %d\n ", readable);
-	printf("writeable is %d\n", writeable);
+        printf("readable is %lu\n ", readable);
+        printf("writeable is %lu\n", writeable);
     }   
 
     private:
 
-    char buf[BUF_SIZE]; 
-    char * writeinx;
-    size_t  writeable;
-    size_t  readable;
+    char       buf[BUF_SIZE]; 
+    char*      writeinx;
+    size_t     writeable;
+    size_t     readable;
 };
 
 #endif
