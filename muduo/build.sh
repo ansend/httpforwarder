@@ -1,13 +1,13 @@
 #!/bin/sh
 
-set -x
+#set -x
 
 SOURCE_DIR=`pwd`
 BUILD_DIR=${BUILD_DIR:-../build}
 BUILD_TYPE=${BUILD_TYPE:-release}
 INSTALL_DIR=${INSTALL_DIR:-../${BUILD_TYPE}-install}
 BUILD_NO_EXAMPLES=${BUILD_NO_EXAMPLES:-1}
-
+echo $BUILD_NO_EXAMPLES
 mkdir -p $BUILD_DIR/$BUILD_TYPE \
   && cd $BUILD_DIR/$BUILD_TYPE \
   && cmake \
@@ -17,6 +17,7 @@ mkdir -p $BUILD_DIR/$BUILD_TYPE \
            $SOURCE_DIR \
   && make $*
 
+cd $SOURCE_DIR; cp -rf $BUILD_DIR/$BUILD_TYPE/lib/* ../lib/
 # Use the following command to run all the unit tests
 # at the dir $BUILD_DIR/$BUILD_TYPE :
 # CTEST_OUTPUT_ON_FAILURE=TRUE make test
