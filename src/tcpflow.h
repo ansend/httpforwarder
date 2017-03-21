@@ -83,14 +83,14 @@ class TcpFlow
             //then start the parse 
             while (buf.get_readable() < BUF_SIZE - 8)
             {
-                buf.readFd(0);
                 //cregex can not assign the length of string to be parsed.
     	        //so it there may be string overflow if it don't match the
     			//pattern in given string length. how to avoid.
     			
     	        if(buf.readFd(0) <= 0 )
     	        {
-                    break;
+                    printf("input connection closed , exit\n");
+                    exit(1);
     	        }
             }
             
